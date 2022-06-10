@@ -1,0 +1,45 @@
+<html>
+
+<head>
+
+<style type="text/css">
+  .flexbox-container { 
+    display: flex;
+  }
+</style>
+
+</head>
+
+<body>
+
+<div class="flexbox-container" id="layout">
+  <div>
+    <div>
+    
+    </div>
+  </div>
+  
+  <div>
+    <div>
+    
+    </div>
+  </div>
+  
+  <div>
+    <div>
+    
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script>
+
+function generateLayout() {
+  var uiElement = document.getElementById("layout");
+}
+
+<script>
+
+</html>
