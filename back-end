@@ -36,15 +36,12 @@
 
 <script>
 
-window.onload = function() {
-  apiCall()
-}
-
 function apiCall() {
   var apiCall = 'https://crtr.dev/api.json'
   
   fetch(apiCall, {
     headers: {
+      'mode': 'no-cors',
       'Content-Type': 'application/json'
     }})
     .then(response => {
@@ -59,6 +56,10 @@ function apiCall() {
 
 function generateLayout() {
   var uiElement = document.getElementById("layout");
+}
+
+window.onload = function() {
+  apiCall()
 }
 
 <script>
