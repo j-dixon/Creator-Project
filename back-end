@@ -47,7 +47,6 @@ function apiCall() {
       return response.json()
     })
     .then(data => {
-      window.alert('Success'),
       console.log(data)
     })
     .catch(error => window.alert('Error'))
