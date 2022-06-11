@@ -41,7 +41,6 @@ function apiCall() {
   
   fetch(apiCall, {
     headers: {
-      'mode': 'no-cors',
       'Content-Type': 'application/json'
     }})
     .then(response => {
