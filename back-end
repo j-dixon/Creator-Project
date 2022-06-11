@@ -1,0 +1,67 @@
+<html>
+
+<head>
+
+<style type="text/css">
+  .flexbox-container { 
+    display: flex;
+  }
+</style>
+
+</head>
+
+<body>
+
+<div class="flexbox-container" id="layout">
+  <div>
+    <div>
+    
+    </div>
+  </div>
+  
+  <div>
+    <div>
+    
+    </div>
+  </div>
+  
+  <div>
+    <div>
+    
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script>
+
+window.onload = function() {
+  apiCall()
+}
+
+function apiCall() {
+  var apiCall = 'https://crtr.dev/api.json'
+  
+  fetch(apiCall, {
+    headers: {
+      'Content-Type': 'application/json'
+    }})
+    .then(response => {
+      return response.json()
+    })
+    .then(data => {
+      window.alert('Success'),
+      console.log(data)
+    })
+    .catch(error => window.alert('Error'))
+}
+
+function generateLayout() {
+  var uiElement = document.getElementById("layout");
+}
+
+<script>
+
+</html>
+
