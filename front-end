@@ -36,6 +36,10 @@
 
 <script>
 
+function getData() {
+
+}
+
 function generateLayout() {
   var uiElement = document.getElementById("layout");
 }
