@@ -36,8 +36,11 @@
 
 <script>
 
+var output;
+
 function apiCall() {
-  var apiCall = 'https://crtr.dev/api.json'
+  // circumvents CORS policy on browsers by using this proxy server 'https://cors-anywhere.herokuapp.com/'
+  var apiCall = 'https://cors-anywhere.herokuapp.com/https://crtr.dev/api.json'
   
   fetch(apiCall, {
     headers: {
@@ -47,13 +50,28 @@ function apiCall() {
       return response.json()
     })
     .then(data => {
-      console.log(data)
+      console.log(data),
+      displayLayout(data)
     })
     .catch(error => window.alert('Error'))
 }
 
-function generateLayout() {
+function buildLayout(properties) {
+  var propertyContainer = '<div><div></div></div>';
+  for(let i = 0; i <= properties; i++) {
+    output += propertyContainer;
+  }
+}
+
+function displayLayout(data) {
+  // html element on the ui for the layout to display in
   var uiElement = document.getElementById("layout");
+  
+  var properties = data.length;
+  console.log(properties);
+  var uiStructure = buildLayout(properties);
+  
+  uiElement.innerHTML = output;
 }
 
 window.onload = function() {
