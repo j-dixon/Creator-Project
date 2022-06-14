@@ -13,23 +13,7 @@
 <body>
 
 <div class="flexbox-container" id="layout">
-  <div>
-    <div>
-    
-    </div>
-  </div>
   
-  <div>
-    <div>
-    
-    </div>
-  </div>
-  
-  <div>
-    <div>
-    
-    </div>
-  </div>
 </div>
 
 </body>
@@ -50,7 +34,6 @@ function apiCall() {
       return response.json()
     })
     .then(data => {
-      console.log(data),
       displayLayout(data)
     })
     .catch(error => window.alert('Error'))
@@ -68,17 +51,18 @@ function displayLayout(data) {
   var uiElement = document.getElementById("layout");
   
   var properties = data.length;
+  console.log(data);
   console.log(properties);
-  var uiStructure = buildLayout(properties);
+  // var uiStructure = buildLayout(properties);
   
-  uiElement.innerHTML = output;
+  // uiElement.innerHTML = output;
 }
 
 window.onload = function() {
   apiCall()
 }
 
-<script>
+</script>
 
 </html>
 
