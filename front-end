@@ -1,49 +1,134 @@
 <html>
 
 <head>
-
+    
 <style type="text/css">
-  .flexbox-container { 
-    display: flex;
-  }
+    .flexbox-container { 
+        display:flex;
+        flex-flow:row wrap;
+        justify-content:center;
+        width:80%;
+        margin:0 auto;
+        padding:5em 0 0 0;
+    }
+    .property-container {
+        width:80%;
+        margin:1em;
+        min-height:300px;
+        overflow:hidden;
+    }
+    .thumbnail {
+        float:left;
+        width:45%;
+        margin:0 2em 0 0;
+        height:100%;
+        background-size:cover;
+    }
+    .property-box {
+        width: 35%;
+        min-height: 280px;
+        background-color: #FAFAFA;
+        margin: 1em auto;
+        z-index: 1;
+        position: relative;
+        padding:0 1em 0 1em;
+    }
+    .property-address-data {
+        position:absolute;
+        font-size:1.5em;
+        text-transform:capitalize;
+    }
+    .property-available-date {
+        position: absolute;
+        font-size:1em;
+        top:50px;
+        text-transform:capitalize;
+    }
+    .property-details {
+        position:absolute;
+        font-size:1em;
+        top:85px;
+        text-transform:capitalize;
+    }
+    .property-price {
+        position:absolute;
+        font-size:1em;
+        top:120px;
+        text-transform:capitalize;
+    }
+    .book-now {
+        position:absolute;
+        top:160px;
+        padding:1em;
+        width:85%;
+        text-align:center;
+        background-color:orange;
+        text-transform:uppercase;
+        margin:1.5em auto 1em auto;
+        text-decoration:none;
+        color:white;
+    }
 </style>
-
+    
 </head>
-
+    
 <body>
-
-<div class="flexbox-container" id="layout">
-  <div>
-    <div>
+   
+<div class="flexbox-container" id="layout"></div>
     
-    </div>
-  </div>
-  
-  <div>
-    <div>
-    
-    </div>
-  </div>
-  
-  <div>
-    <div>
-    
-    </div>
-  </div>
-</div>
-
 </body>
-
+    
 <script>
 
-function getData() {
+// global variables
+var output = "";    
 
+function buildLayout(array) {
+    
+    console.log(array);
+    
+    var uiElement = document.getElementById("layout")
+    
+    for(let i = 0; i < array.length; i++) {
+        // initial container for each of the properties
+        output += '<div class="property-container">';
+        
+        // extra containers within for displaying the photos (thumnails)
+        for(let x = 0; x < array[i].media.photos.length; x++) {
+            var currentPhoto = array[i].media.photos[x].thumb;
+            output += '<div id="thumb" class="thumbnail" style="background-image: url(' + currentPhoto + ');"></div>';
+        }
+        
+        output += '<div class="property-box" id="' + i + '">'; 
+        
+        // populates the small property box with relevant data
+        var property = array[i];
+        output += '<p class="property-address-data">' + property.address.property_name + ', ' + property.address.road_name + '</p>';
+        // this below line breaks due to there being no data in the original array for some properties, it currently just displays 'undefined'
+        output += '<p class="property-available-date">' + property.contracts.start_date + '</p>';
+        output += '<p class="property-details">' + property.room_details.length + ' Bedrooms | ' + property.bathrooms + ' Bathroom(s) | ' + ' 1 Living Space' + '</p>';
+        // this below line breaks due to there being no data in the original array for some properties, it currently just displays 'undefined'
+        output += '<p class="property-price">' + property.contracts.prices + ' Excluding Bills' + '</p>';
+        output += '<a href="' + property.contracts.book_now_url + '"><p class="book-now">Book Now</p></a>';
+        
+        output += '</div>';
+        
+        output += '</div>';
+    }
+    
+    // updates ui with output to display
+    uiElement.innerHTML = output;
+}
+    
+// retrieve dataset from browser session storage
+window.onload = function() {
+    var dataset = localStorage.getItem('data');
+    // parses data back into an array, which is used to populate the front end
+    var array = JSON.parse(dataset);
+    
+    buildLayout(array);
 }
 
-function generateLayout() {
-  var uiElement = document.getElementById("layout");
-}
-
-<script>
+</script>
 
 </html>
