@@ -3,66 +3,416 @@
 <head>
 
 <style type="text/css">
-  .flexbox-container { 
-    display: flex;
-  }
+    .updateButtonDiv {
+        width:80%;
+        margin:0 auto;
+        display:flex;
+        flex-flow:row wrap;
+        justify-content:right;
+    }
+    .update {
+        padding:1em;
+        font-size:1em;
+        float:right;
+        margin:0 2.5em 0 0;
+        border-radius:8px;
+    }
+    .update:hover {
+        background-color:#F8F8F8;
+    }
+    .flexbox-container { 
+        display:flex;
+        flex-flow:row wrap;
+        justify-content:center;
+        width:80%;
+        margin:0 auto;
+    }
+    .flexbox-container > div {
+        width:18%;
+        background-color:#F9F9F9;
+        padding:1em;
+        margin:1em;
+        border-radius:8px;
+        font-size:1.5em;
+        line-height:15px;
+        text-transform:uppercase;
+        box-shadow:0 0 2px gray;
+    }
+    .edit-property-link { 
+        text-decoration:none;
+        padding:1em;
+        margin:0.5em 0.5em 0.5em 0;
+        background-color:#FAFAFA;
+        float:left;
+    }
+    .edit-property-link:hover {
+        box-shadow:0 0 5px gray;
+    }
+    .flexbox-container > div:hover {
+        background-color:#F8F8F8;
+    }
+    .modal {  
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        z-index:1;
+        overflow:auto;
+        height:100%;
+        width:100%;
+        background-color:rgb(0,0,0,0.5);
+    }
+    .modal > div { 
+        margin:3em auto;
+        padding:2em;
+        border:2px solid grey;
+        width:60%;
+        border-radius:8px;
+        background-color:#FAFAFA;
+    }
+    .close { 
+        width:100%;
+    }
+    .close-modal { 
+        margin:0 0.5em 0 0;
+        padding:0.2em;
+    }
+    .update-modal { 
+        margin:0 0 0 0.5em;
+        padding:0.2em;
+    }
+    .content-area { 
+        float:left;
+    }
+    .editor-headers { 
+        font-weight:bold;
+        font-size:1.2em;
+        float:left;
+        width:100%;
+        text-decoration:underline;
+    }
+    .address-information { 
+        width:20%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;
+    }
+    .contract-information { 
+        width:20%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;
+    }
+    .eligibility-information { 
+        width:20%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;     
+    }
+    .facilities-information { 
+        width:20%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;
+    }
+    .room-information {  
+        width:100%;
+        font-size:1.2em;
+        float:left;
+        font-weight:bold;
+    }
+    .room-details {
+        width:20%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;
+    }
+    .media-information { 
+        width:100%;
+        padding:0.5em 0.5em 0.5em 0;
+        font-style:italic;
+        float:left;
+    }
+    .editable { 
+        width:20%;
+        padding:0.5em;
+        margin-right:2em;
+        background-color:#FAFAFA;
+        border:1px solid grey;
+        float:left;
+        text-transform:uppercase;
+        box-shadow:0 0 2px gray;
+        border-radius:2px;
+    }
+    .editable:hover { 
+        background-color:#FCFCFC;
+    }
+    .media { 
+        widtH:50%;
+        float:left;
+    }
+    #facilities {
+        width:65%;
+    }
 </style>
 
 </head>
 
 <body>
 
-<div class="flexbox-container" id="layout">
-  
+<div class="updateButtonDiv">
+    <button class="update" href="#" onclick="updateFrontEnd();">Update & View</button>
 </div>
+    
+<div class="flexbox-container" id="layout"></div>
+    
+<div id="modal" class="modal"></div>
 
 </body>
 
 <script>
 
-var output;
-
+// global variables
+var output = "", apiCallData, arrayToTransfer;
+    
+// updates front end with new dataset
+function updateFrontEnd() {
+    var stringifedArray = JSON.stringify(arrayToTransfer);
+    localStorage.setItem('data', stringifedArray);
+    
+    window.location.href = 'front-end.html';
+}
+    
+// retrevies data using api call, with CORS policy bypass
 function apiCall() {
-  // circumvents CORS policy on browsers by using this proxy server 'https://cors-anywhere.herokuapp.com/'
-  var apiCall = 'https://cors-anywhere.herokuapp.com/https://crtr.dev/api.json'
+    // circumvents CORS policy on browsers by using this proxy server 'https://cors-anywhere.herokuapp.com/'
+    // if the call fails, check to see if temporary access to the proxy server is given or not, if not, the call will not function under CORS restrictions, you can gain temporary access from this link https://cors-anywhere.herokuapp.com/corsdemo
+    var apiCall = 'https://cors-anywhere.herokuapp.com/https://crtr.dev/api.json';
   
-  fetch(apiCall, {
-    headers: {
-      'Content-Type': 'application/json'
-    }})
-    .then(response => {
-      return response.json()
-    })
-    .then(data => {
-      displayLayout(data)
-    })
-    .catch(error => window.alert('Error'))
+    fetch(apiCall, {
+        headers: {
+        'Content-Type': 'application/json'
+        }})
+        .then(response => {
+        return response.json()
+        })
+        .then(data => {
+            displayLayout(data)
+        })
+        .catch(error => window.alert('Error'))
+}
+    
+// builds the data editor UI feature, duplicates based on number of properties, and number of data points inside each property array
+function buildEditor(apiCallData, propertyArrayNumber) {
+    var addressEditor = "";
+    var propertyData = apiCallData.properties[propertyArrayNumber];
+    
+    var editorUI = "";
+    
+    editorUI += '<p class="editor-headers">Property Address</p>';
+    
+    editorUI += '<p class="address-information">House Name</p>' + '<p id="propertyName" class="editable" contenteditable="true">' + propertyData.address.property_name + '</p>' + '<p class="address-information">House Number</p>' + '<p id="propertyNumber" class="editable" contenteditable="true">' + propertyData.address.property_number + '</p>' + '<p class="address-information">Street Name</p>' + '<p id="roadName" class="editable" contenteditable="true">' + propertyData.address.road_name + '</p>' + '<p class="address-information">City Name</p>' + '<p id="cityName" class="editable" contenteditable="true">' + propertyData.address.city + '</p>' + '<p class="address-information">Postcode</p>' + '<p id="propertyPostcode" class="editable" contenteditable="true">' + propertyData.address.postcode + '</p>';
+    
+    editorUI += '<p class="editor-headers">Contract Information</p>';
+    
+    var contractsArray = propertyData.contracts;
+    var contractsString = "";
+    
+    for(let i = 0; i < contractsArray.length; i++) {
+        contractsString += '<p class="contract-information">Contract Title</p>' + '<p id="contractTitle' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].title + '</p>' + '<p class="contract-information">Booking URL</p>' + '<p id="bookNowURL' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].book_now_url + '</p>' + '<p class="contract-information">Contract Start Date</p>' + '<p id="startDate' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].start_date + '</p>' + '<p class="contract-information">Contract End Date</p>' + '<p id="endDate' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].end_date + '</p>' + '<p class="contract-information">Minimum Contract Period (Days)</p>' + '<p id="minimumContract' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].min_contract_days + '</p>';
+        
+        var pricesArray = propertyData.contracts[i].prices;
+        var pricesString = "";
+        
+        for(let x = 0; x < pricesArray.length; x++) {
+            pricesString += '<p class="contract-information">Deposit per Person</p>' + '<p id="depositPerPerson' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].prices[x].deposit_per_person + '</p>' + '<p class="contract-information">Price per Person per Week</p>' + '<p id="pricePerWeek' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].prices[x].price_per_person_per_week + '</p>';
+        }
+        
+        contractsString += pricesString;
+        
+        contractsString += '<p class="contract-information">Restrictions</p>' + '<p id="restrictions' + i + '" class="editable" contenteditable="true">' + propertyData.contracts[i].restrictions + '</p>' + '<p class="editor-headers">Utilities</p>' + '<p class="contract-information">Broadband</p>' + '<p id="broadband" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.broadband + '</p>' + '<p class="contract-information">Contents Insurance</p>' + '<p id="contentsInsurance" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.contents_insurance + '</p>' + '<p class="contract-information">Council Tax</p>' + '<p id="councilTax" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.council_tax + '</p>' + '<p class="contract-information">Electricity</p>' + '<p id="electricity" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.electricity + '</p>' + '<p class="contract-information">Gas</p>' + '<p id="gas" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.gas + '</p>' + '<p class="contract-information">phone</p>' + '<p id="phone" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.phone + '</p>' + '<p class="contract-information">TV License</p>' + '<p id="tvLicense" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.tv_license + '</p>' + '<p class="contract-information">Water</p>' + '<p id="water" class="editable" contenteditable="true">' + propertyData.contracts[i].utilities.water + '</p>'
+    }
+    
+    editorUI += contractsString;
+    
+    editorUI += '<p class="editor-headers">Eligibilities</p>';
+    
+    editorUI += '<p class="eligibility-information">DSS</p>' + '<p id="dssEligible" class="editable" contenteditable="true">' + propertyData.eligibility.dss + '</p>' + '<p class="eligibility-information">Female Only</p>' + '<p id="femaleOnly" class="editable" contenteditable="true">' + propertyData.eligibility.female_only + '</p>' + '<p class="eligibility-information">Male Only</p>' + '<p id="maleOnly" class="editable" contenteditable="true">' + propertyData.eligibility.male_only + '</p>' + '<p class="eligibility-information">Pets Allowed</p>' + '<p id="petsPermitted" class="editable" contenteditable="true">' + propertyData.eligibility.pets_permitted + '</p>' + '<p class="eligibility-information">Under-grad Students</p>' + '<p id="undergraduate" class="editable" contenteditable="true">' + propertyData.eligibility.undergraduate_student + '</p>' + '<p class="eligibility-information">Post-grad Students</p>' + '<p id="postgraduate" class="editable" contenteditable="true">' + propertyData.eligibility.postgraduate_student + '</p>' + '<p class="eligibility-information">Professionals Allowed</p>' + '<p id="professional" class="editable" contenteditable="true">' + propertyData.eligibility.professional + '</p>' + '<p class="eligibility-information">Smoking Permitted</p>' + '<p id="smokingPermitted" class="editable" contenteditable="true">' + propertyData.eligibility.smoking_permitted + '</p>';
+    
+    editorUI += '<p class="editor-headers">Facilities</p>';
+    
+    var facilitiesArray = propertyData.facilities;
+    var facilitiesString = "";
+    
+    for(let i = 0; i < facilitiesArray.length; i++) {
+        facilitiesString += facilitiesArray[i] + ', ';
+    }
+    
+    facilitiesString = facilitiesString.replace(/,\s*$/, "");
+    
+    editorUI += '<p class="facilities-information">Facilities Available</p>' + '<p id="facilities" class="editable" contenteditable="true">' + facilitiesString + '</p>';
+    
+    editorUI += '<p class="editor-headers">Room Details</p>';
+    
+    editorUI += '<p class="room-details">Rooms Let Individually</p>' + '<p id="roomsLetIndividual" class="editable" contenteditable="true">' + propertyData.rooms_let_individually + '</p>';
+    
+    var rooms = propertyData.room_details;
+    var roomsString = "";
+    
+    for(let i = 0; i < rooms.length; i++) {
+        roomsString += '<p class="room-information">Room ' + rooms[i].room_name + '</p>' + '<p class="room-details">Room Number</p>' + '<p id="roomName' + i + '" class="editable" contenteditable="true">' + rooms[i].room_name + '</p>' + '<p class="room-details">Room ID</p>' + '<p id="roomID' + i + '" class="editable" contenteditable="true">' + rooms[i].room_id + '</p>' + '<p class="room-details">Floor</p>' + '<p id="floor' + i + '" class="editable" contenteditable="true">' + rooms[i].floor + '</p>' + '<p class="room-details">Floor Space</p>' + '<p id="floorSpace' + i + '" class="editable" contenteditable="true">' + rooms[i].floor_space + '</p>' + '<p class="room-details">Ensuite</p>' + '<p id="ensuite' + i + '" class="editable" contenteditable="true">' + rooms[i].ensuite + '</p>' + '<p class="room-details">Disabled Access</p>' + '<p id="disabledAccess' + i + '" class="editable" contenteditable="true">' + rooms[i].disabled_access + '</p>';
+    }
+    
+    editorUI += roomsString;
+    
+    editorUI += '<p class="editor-headers">Media</p>';
+    
+    editorUI += '<p class="media-information">Floorplans</p>' + '<p class="media">' + propertyData.media.floorplans + '</p>';
+    
+    editorUI += '<p class="media-information">Photos</p>';
+    
+    var propertyPhotos = propertyData.media.photos;
+    var photosString = "";
+    
+    for(let i = 0; i < propertyPhotos.length; i++) {
+        photosString += '<a href="' + propertyData.media.photos[i].photo + '"><p class="media">' + propertyData.media.photos[i].photo + '</p></a>';
+    }
+    
+    editorUI += photosString;
+    
+    var thumbnailString = "";
+    
+    for(let i = 0; i < propertyPhotos.length; i++) {
+        thumbnailString += '<a href="' + propertyData.media.photos[i].thumb + '"><p class="media">' + propertyData.media.photos[i].thumb + '</p></a>';
+    }
+    
+    editorUI += thumbnailString; 
+    
+    editorUI += '<p class="media-information">360 Photos</p>' + '<p class="media">' + propertyData.media.photos360 + '</p>';
+    editorUI += '<p class="media-information">Tours</p>' + '<p class="media">' + propertyData.media.tours + '</p>';
+    editorUI += '<p class="media-information">Videos</p>' + '<p class="media">' + propertyData.media.videos + '</p>';
+    
+    return editorUI;
+}
+    
+// updates the original array with the new and updated data
+function updateNewPropertyArray(obj, propertyToUpdate, originalArray) {
+    originalArray[propertyToUpdate] = obj;
+    arrayToTransfer = originalArray; 
+}
+    
+// updates each individual array relating to its corresponding property with the new data taken from the editor
+function updateProperty(data) {
+    // closes modal down
+    var modal = document.getElementById("modal");
+    
+    modal.style.display = 'none';
+    
+    var propertyToUpdate = data.className;
+    var originalPropertyObject = apiCallData.properties[propertyToUpdate];
+    var originalArray = apiCallData.properties;
+    var obj = apiCallData.properties[propertyToUpdate];
+
+    var idTags = ['propertyName','propertyNumber','roadName','cityName','propertyPostcode', 'contractTitle', 'bookNowURL', 'startDate', 'endDate', 'minimumContract', 'depositPerPerson', 'pricePerWeek', 'restrictions', 'broadband', 'contentsInsurance', 'councilTax', 'electricity', 'gas', 'phone', 'tvLicense', 'water', 'dssEligible', 'femaleOnly', 'maleOnly', 'petsPermitted', 'undergraduate', 'postgraduate', 'professional', 'smokingPermitted', 'facilities', 'roomName', 'roomID', 'floor', 'floorSpace', 'ensuite', 'disabledAccess'];
+    
+    // updates address information
+    obj.address.property_name = document.getElementById(idTags[0]).innerHTML, obj.address.property_number = document.getElementById(idTags[1]).innerHTML, obj.address.road_name = document.getElementById(idTags[2]).innerHTML, obj.address.city = document.getElementById(idTags[3]).innerHTML, obj.address.postcode = document.getElementById(idTags[4]).innerHTML;
+      
+    // updates contract information
+    for(let i = 0; i < obj.contracts.length; i++) {
+        obj.contracts[i].title = document.getElementById(idTags[5] + i).innerHTML, obj.contracts[i].book_now_url = document.getElementById(idTags[6] + i).innerHTML, obj.contracts[i].start_date = document.getElementById(idTags[7] + i).innerHTML, obj.contracts[i].end_date = document.getElementById(idTags[8] + i).innerHTML, obj.contracts[i].min_contract_days = document.getElementById(idTags[9] + i).innerHTML, obj.contracts[i].prices[i].deposit_per_person = document.getElementById(idTags[10] + i).innerHTML, obj.contracts[i].prices[i].price_per_person_per_week = document.getElementById(idTags[11] + i).innerHTML, obj.contracts[i].restrictions = document.getElementById(idTags[12] + i).innerHTML, obj.contracts[i].utilities.broadband = document.getElementById(idTags[13]).innerHTML, obj.contracts[i].utilities.contents_insurance = document.getElementById(idTags[14]).innerHTML, obj.contracts[i].utilities.council_tax = document.getElementById(idTags[15]).innerHTML, obj.contracts[i].utilities.electricity = document.getElementById(idTags[16]).innerHTML, obj.contracts[i].utilities.gas = document.getElementById(idTags[17]).innerHTML, obj.contracts[i].utilities.phone = document.getElementById(idTags[18]).innerHTML, obj.contracts[i].utilities.tv_license = document.getElementById(idTags[19]).innerHTML, obj.contracts[i].utilities.water = document.getElementById(idTags[20]).innerHTML;
+    }
+    
+    // updates eligiblity information
+    obj.eligibility.dss = document.getElementById(idTags[21]).innerHTML, obj.eligibility.female_only = document.getElementById(idTags[22]).innerHTML, obj.eligibility.male_only = document.getElementById(idTags[23]).innerHTML, obj.eligibility.pets_permitted = document.getElementById(idTags[24]).innerHTML, obj.undergraduate_student = document.getElementById(idTags[25]).innerHTML, obj.eligibility.postgraduate_student = document.getElementById(idTags[26]).innerHTML, obj.eligibility.professional = document.getElementById(idTags[27]).innerHTML, obj.eligibility.smoking_permitted = document.getElementById(idTags[28]).innerHTML;
+    
+    // updates facilities information
+    var facilitiesArray = obj.facilities;
+    var newFacilitiesString = document.getElementById(idTags[29]).innerHTML;
+    
+    var newArray = newFacilitiesString.split(',');
+    
+    obj.facilities = newArray;
+    
+    // updates room information
+    obj.rooms_let_individually = document.getElementById("roomsLetIndividual").innerHTML;
+    
+    for(let i = 0; i < obj.room_details.length; i++) {
+        obj.room_details[i].room_name = document.getElementById(idTags[30] + i).innerHTML, obj.room_details[i].room_id = document.getElementById(idTags[31] + i).innerHTML, obj.room_details[i].floor = document.getElementById(idTags[32] + i).innerHTML, obj.room_details[i].floor_space = document.getElementById(idTags[33] + i).innerHTML, obj.room_details[i].ensuite = document.getElementById(idTags[34] + i).innerHTML, obj.room_details[i].disabled_access = document.getElementById(idTags[35] + i).innerHTML;
+    }
+    
+    // WORKS WITH EXCEPTION OF UTILITIES AND FACILTIES
+    
+    updateNewPropertyArray(obj, propertyToUpdate, originalArray);
+}
+    
+// displays the modal box that is used for the editor
+function displayModal(data) {
+    var modal = document.getElementById("modal");
+    var propertyArrayNumber = data.parentElement.className;
+    var modalOutput = "";
+    
+    var closeButton = '<a href="javascript:closeModal();"><button class="close-modal">Exit</button></a>';
+    var updateButton = '<a class="' + propertyArrayNumber + '" href="#" onclick="updateProperty(this);"><button class="update-modal">Update</button></a>';
+    
+    modalOutput += '<div>';
+    modalOutput += '<div class="content-area">';
+    
+    var editorLayout = buildEditor(apiCallData, propertyArrayNumber);
+    
+    modalOutput += editorLayout;
+    modalOutput += '</div>';
+    modalOutput += '<div class="close">';
+    modalOutput += closeButton + updateButton;
+    modalOutput += '</div>';
+    modalOutput += '</div>';
+    
+    modal.innerHTML = modalOutput;
+    
+    modal.style.display = 'block';
+}
+    
+// closes modal box
+function closeModal() {
+    var modal = document.getElementById("modal");
+    
+    modal.style.display = 'none';
+}
+    
+// builds the initial layout, with each property being denoted by its own container
+function buildLayout(data, number) {
+    
+    for(let i = 0; i < number; i++) {
+        output += '<div>';
+        output += '<p>' + data[i].address.property_name + '</p>';
+        output += '<p>' + data[i].address.property_number + ', ' + data[i].address.road_name + '</p>';
+        output += '<p>' + data[i].address.city + ', ' + data[i].address.postcode + '</p>';
+        
+        output += '<p id="edit" class="' + i + '"><button class="edit-property-link" href="#" onclick="displayModal(this);">Edit Property</button></p>';
+        
+        output += '</div>';
+    }
 }
 
-function buildLayout(properties) {
-  var propertyContainer = '<div><div></div></div>';
-  for(let i = 0; i <= properties; i++) {
-    output += propertyContainer;
-  }
-}
-
+// handles the displaying of the ui, uses several other functions to build the entire ui, 'output' is a global variable holding the entire generated html output
 function displayLayout(data) {
-  // html element on the ui for the layout to display in
-  var uiElement = document.getElementById("layout");
+    // html element on the ui for the layout to display in
+    var uiElement = document.getElementById("layout");
+    
+    apiCallData = data;
+    var data = data.properties;
+    var number = data.length;
+    
+    var uiStructure = buildLayout(data, number);
   
-  var properties = data.length;
-  console.log(data);
-  console.log(properties);
-  // var uiStructure = buildLayout(properties);
-  
-  // uiElement.innerHTML = output;
+    uiElement.innerHTML = output;
 }
 
+// starts the program off by getting the data as soon as the page loads properly
 window.onload = function() {
-  apiCall()
+    apiCall();
 }
 
 </script>
 
 </html>
-
